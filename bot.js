@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { Bot, Keyboard } from '@maxhub/max-bot-api';
+import { Bot, ImageAttachment, Keyboard, AudioAttachment, FileAttachment, VideoAttachment} from '@maxhub/max-bot-api';
 
 dotenv.config({ path: './process.env' });
 console.log('BOT_TOKEN =', process.env.BOT_TOKEN);
@@ -42,7 +42,6 @@ let Flag_upload = false;
 
 // Функция для проверки, было ли сообщение отправлено после запуска бота
 function isMessageAfterStart(timestamp) {
-  // timestamp в Max Chatbots обычно в миллисекундах
   // Если timestamp меньше времени запуска бота - сообщение старое
   return timestamp >= BOT_START_TIME;
 }
@@ -129,7 +128,35 @@ bot.action('look', async (ctx) => {
             
             const homework = Homework.get(subjectKey);
             if (homework) {
-              await ctx.reply(`Домашнее задание по предмету:\n${homework.join('\n')}`);
+              for (let j = 0; j < homework.length; j ++) {
+                console.log(homework[j][0])
+                console.log(homework[j][1])
+                const type = homework[j][0]
+                const text = homework[j][1]
+                if (type === 'text') {
+                  await ctx.reply(`Домашнее задание по предмету:\n${text}`);
+                }
+                else if (type === 'image') {
+                  
+                  const image = new ImageAttachment({ token: text });
+                  await ctx.reply('Домашнее задание по предмету:', { attachments: [image.toJson()] });
+                }
+                else if (type === 'audio') {
+                  const audio = new AudioAttachment({ token: text });
+                  await ctx.reply('Домашнее задание по предмету:', { attachments: [audio.toJson()] });
+                }
+                else if (type === 'video') {
+                  const video = new VideoAttachment({ token: text });
+                  await ctx.reply('Домашнее задание по предмету:', { attachments: [video.toJson()] });
+                }
+                else if (type === 'file') {
+                  const file = new FileAttachment({ token: text });
+                  await ctx.reply('Домашнее задание по предмету:', { attachments: [file.toJson()] });
+                }
+                else {
+                  await ctx.reply(`Домашнее задание по предмету:\n${text}`);
+                }
+              }
             } else {
               await ctx.reply('По этому предмету нет домашнего задания');
             }
@@ -167,7 +194,7 @@ bot.action('upload', async (ctx) => {
               return;
             }
             
-            await ctx.reply('Отправьте сообщение с домашним заданием (текст)');
+            await ctx.reply('Отправьте сообщение с домашним заданием (текст, картинка или файл, но не все сразу)');
             Flag_upload = true;
             count = i;
           });
@@ -187,6 +214,7 @@ bot.action('create', async (ctx) => {
       console.log('Ignoring old create action from:', new Date(ctx.message.timestamp).toISOString());
       return;
     }
+    
     await ctx.reply('Напиши название предмета (не используй нижнее подчеркивание)');
     Flag_update = true;
   } catch (error) {
@@ -233,6 +261,8 @@ bot.on('message_created', async (ctx) => {
         console.log('Attachments:', attachments);
         console.log('URL:', url);
         console.log('Token:', token);
+        const image = new ImageAttachment({ token: token });
+        await ctx.reply('', { attachments: [image.toJson()] });
         await ctx.reply('Вернись обратно', {attachments: [Comeback]});
       } else {
         const text = ctx.message.body.text;
@@ -276,12 +306,30 @@ bot.on('message_created', async (ctx) => {
     
     if (Flag_upload === true && count > 0) {
       const key = colls_l[count-1];
-      const text = ctx.message.body.text;
+      let text = 'text'
+      const attachments = ctx.message.body.attachments;
+      let type = 'text'
+    
+      console.log(attachments)
+      console.log(type)
+      console.log(ctx.message)
+      
+      if (attachments && attachments.length > 0) {
+        const token = attachments[0].payload.token;
+        const url = attachments[0].payload.url;
+        console.log('Attachments:', attachments);
+        console.log('URL:', url);
+        type = attachments[0].type
+        text = token
+      }
+      else {
+        text = ctx.message.body.text;
+      }
       
       if (Homework.has(key)) {
-        Homework.get(key).push(text);
+        Homework.get(key).push([type, text]);
       } else {
-        Homework.set(key, [text]);
+        Homework.set(key, [[type, text]]);
       }
       
       await ctx.reply('Сообщение принято и сохранено!');
