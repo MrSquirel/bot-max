@@ -14,12 +14,8 @@
   "dependencies": {
     "@maxhub/max-bot-api": "^0.2.1",
     "dotenv": "^17.2.3",
-<<<<<<< HEAD
-    "nodemon": "^3.1.10",
+    "nodemon": "^3.1.11",
     "react": "^19.2.0"
-=======
-    "nodemon": "^3.1.11"
->>>>>>> 2f91abd9e6ab1ac3c33e517ee91db6ec394f0dc6
   },
   "devDependencies": {
     "types": "^0.1.1",
