@@ -11,3 +11,4 @@ services:
       - bot-data:/app/data
 volumes:
   bot-data:
+ 
