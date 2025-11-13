@@ -9,11 +9,13 @@
 Для того чтобы запустить бота локально нужно:
 1) Склонировать репозиторий командой git clone https://github.com/MrSquirel/bot-max.git
 2) Установить библиотеки командами:
-3) npm i @maxhub/max-bot-api
-4) npm i dotenv
-5) npm i nodemon
-6) npm add -d typescript
-7) npm install sqlite3 sqlite
+```shell
+npm i @maxhub/max-bot-api
+npm i dotenv
+npm i nodemon
+npm add -d typescript
+npm install sqlite3 sqlite
+```
 8) Далее работаем с Docker, прописываем команду docker init (Docker должен быть запущен) (ЭТО НУЖНО ТОЛЬКО ЕСЛИ ВЫ ХОТИТЕ СОБРАТЬ ОБРАЗ ЗАНОВО, В РЕПОЗИТОРИИ ОН УЖЕ ЕСТЬ)
 9) Выбираем стрелочками и enter Node
 10) На вопрос о версии либо уточняем, либо нажимаем enter
