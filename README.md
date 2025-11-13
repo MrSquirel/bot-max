@@ -59,7 +59,6 @@ services:
       - bot-data:/app/data
 volumes:
   bot-data:
-  # postgres-data:
 ```
 
 16) Собираем контейнер командой docker compose up --build 
