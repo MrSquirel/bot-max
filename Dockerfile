@@ -1,38 +1,26 @@
-# syntax=docker/dockerfile:1
+FROM node:18-alpine
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
+WORKDIR /app
 
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
+# Копируем package files
+COPY package*.json ./
 
-ARG NODE_VERSION=24.11.0
+# Устанавливаем зависимости
+RUN npm install --production
 
-FROM node:${NODE_VERSION}-alpine
-
-# Use production node environment by default.
-ENV NODE_ENV production
-
-
-WORKDIR /usr/src/app
-
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
-
-# Run the application as a non-root user.
-USER node
-
-# Copy the rest of the source files into the image.
+# Копируем ВСЕ файлы включая папку src
 COPY . .
 
-# Expose the port that the application listens on.
-EXPOSE 8808
+# Создаем директорию для данных
+RUN mkdir -p /app/data
 
-# Run the application.
-CMD npm start
+# Создаем пользователя для безопасности
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S botuser -u 1001
+
+# Меняем владельца файлов
+RUN chown -R botuser:nodejs /app
+USER botuser
+
+# Запускаем бота с правильным путем
+CMD ["node", "index.js"]
