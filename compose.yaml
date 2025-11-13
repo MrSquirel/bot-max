@@ -9,10 +9,5 @@ services:
       - .env
     volumes:
       - bot-data:/app/data
-   
-
-
-
 volumes:
   bot-data:
-
