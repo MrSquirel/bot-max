@@ -23,7 +23,8 @@
 14) Перед сборкой контейнера надо заменить содержимое файлов Dockerfile и compose.yaml
 
 Dockerfile
-```FROM node:18-alpine
+```Dockerfile
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -44,7 +45,8 @@ USER botuser
 CMD ["node", "index.js"]
 ```
 compose.yaml
-```version: '3.8'
+```YAML
+version: '3.8'
 
 services:
   homework-bot:
