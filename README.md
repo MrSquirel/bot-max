@@ -27,27 +27,20 @@ Dockerfile
 
 WORKDIR /app
 
-# Копируем package files
 COPY package*.json ./
 
-# Устанавливаем зависимости
 RUN npm install --production
 
-# Копируем ВСЕ файлы из корня
 COPY . .
 
-# Создаем директорию для данных
 RUN mkdir -p /app/data
 
-# Создаем пользователя для безопасности
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S botuser -u 1001
 
-# Меняем владельца файлов
 RUN chown -R botuser:nodejs /app
 USER botuser
 
-# Запускаем бота из корневой папки
 CMD ["node", "index.js"]
 ```
 compose.yaml
@@ -62,31 +55,6 @@ services:
       - .env
     volumes:
       - bot-data:/app/data
-    # Если нужно использовать внешнюю БД вместо SQLite:
-    # environment:
-    #   - DB_TYPE=postgres
-    #   - DB_HOST=postgres
-    #   - DB_PORT=5432
-    #   - DB_NAME=homework_bot
-    #   - DB_USER=botuser
-    #   - DB_PASSWORD=yourpassword
-    # depends_on:
-    #   - postgres
-
-  # Раскомментируйте для использования PostgreSQL вместо SQLite:
-  # postgres:
-  #   image: postgres:15-alpine
-  #   container_name: homework-postgres
-  #   restart: unless-stopped
-  #   environment:
-  #     POSTGRES_DB: homework_bot
-  #     POSTGRES_USER: botuser
-  #     POSTGRES_PASSWORD: yourpassword
-  #   volumes:
-  #     - postgres-data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
-
 volumes:
   bot-data:
   # postgres-data:
